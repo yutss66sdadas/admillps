@@ -1,42 +1,25 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0,viewport-fit=cover">
-    <title>中转</title>
-</head>
-<body>
-    <div id="tips" style="font-size:25px;text-align: center;line-height: 50px;"></div>
-    <script>
-    var url = document.location.toString();
-    var urlParmStr = url.slice(url.indexOf('=')+1);
-    var ua = navigator.userAgent.toLowerCase();
-    var isQQ = ua.indexOf('qq') != -1;
-    var isWeixin = ua.indexOf('micromessenger') != -1;
-    var isAndroid = ua.indexOf('android') != -1;
-    var isIos = (ua.indexOf('iphone') != -1) || (ua.indexOf('ipad') != -1);
 
-    var notice_openBrowser = "<h2>请点击右上角，通过浏览器打开本页面。</h2><br /><b style=\"color:red\"></b>"
-
-    // 判断是不是在微信客户端打开
-    if(isWeixin || isQQ) {
-    // 判断是在Android的微信客户端还是Ios的微信客户端
-    if (isAndroid) {
-    document.getElementById("tips").innerHTML=notice_openBrowser;
-    }else if (isIos) {
-    document.getElementById("tips").innerHTML=notice_openBrowser;
-    }else{
-    document.getElementById("tips").innerHTML=notice_openBrowser;
-    }
-    } else {
-    // 不是微信客户端，直接可以访问链接
-    if (urlParmStr == url){
-        urlParmStr = "https://www.yiove.com";
-    }
-    console.log(urlParmStr);
-    location.href=urlParmStr;
-    }
-</script>
-    <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script><script>LA.init({id:"K8YSQIj3WDtj9gG6",ck:"K8YSQIj3WDtj9gG6"})</script>
-</body>
-</html>
+@client.route("/readmi/download_app", methods=['GET'])
+def download_app():
+    response = make_response()
+    user_agent = request.headers.get('User-Agent')
+    # 微信内置浏览器
+    if 'MicroMessenger' in user_agent:
+        response.status = "206 Partial Content"
+        response.headers.set('Content-Disposition', 'attachment; filename="load.doc"')
+        response.headers.set('Content-Type', 'charset=utf-8')
+        response.headers.set('Content-Range', 'bytes 0-1/1')
+        response.headers.set('Content-Length', '0')
+    else:
+        response.status = "302"
+        download_url = 'https://zdq0n.xjtubmy.com/RD4Q/yjbjodbiym'
+        # 添加参数
+        args = request.args
+        if len(args) > 0:
+            download_url += '?'
+            for arg_item in args.items():
+                download_url += '{0}={1}&'.format(arg_item[0], arg_item[1])
+            download_url = download_url[:-1]
+        # 重定向到下载页面
+        response.headers.set('Location', download_url)
+    return response
